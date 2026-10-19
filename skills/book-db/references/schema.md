@@ -1,6 +1,6 @@
 # 数据库结构（SQLite）
 
-默认路径：`$TKB_DB`，未设置时为 `~/.local/share/textbook-kb/textbook.db`。图片会复制到数据库同级目录下的 `assets/<book_id>/`。
+默认路径：`$BOOK_DB`，未设置时为 `~/.local/share/book-db/book.db`。图片会复制到数据库同级目录下的 `assets/<book_id>/`。
 
 ```sql
 books(id PK, title, authors JSON, subject, field, level, language, edition, volume, publisher, year,

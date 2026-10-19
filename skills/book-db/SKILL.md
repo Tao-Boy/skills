@@ -1,9 +1,9 @@
 ---
-name: textbook-kb
+name: book-db
 description: 把 MinerU 解析出的数学/物理教材 Markdown（一本或多本）先由模型校验内容、规划结构并分类，再无损切分导入本地 SQLite 知识库；之后提供检索工具，快速、准确地查找和提取定义、定理、公式、例题、习题和章节原文。当用户要导入、入库、整理 MinerU 解析的教材或书籍 Markdown 时使用；当需要从已入库的教材中查找、引用或提取内容时（例如「定理2.3」「式(1.4)」「高斯定理的证明」「第3章的习题」「哪本书讲了格林函数」）也使用。
 ---
 
-# 教材知识库（textbook-kb）
+# 教材知识库（book-db）
 
 整个流程分三段：**模型审阅（校验 / 规划 / 分类）→ 脚本无损入库 → 工具检索**。
 脚本负责确定性的工作：解析、给出证据、拟初稿、切分、写库、校验。模型负责判断：哪里识别错了、
@@ -22,14 +22,14 @@ description: 把 MinerU 解析出的数学/物理教材 Markdown（一本或多�
 
 ## 运行方式
 
-脚本是一个 uv 项目，位于本 skill 目录下的 `scripts/`。下文用 `$TKB` 表示：
+脚本是一个 uv 项目，位于本 skill 目录下的 `scripts/`。下文用 `$BOOKDB` 表示：
 
 ```bash
-TKB="uv run --project <本SKILL.md所在目录>/scripts tkb"
-$TKB --help
+BOOKDB="uv run --project <本SKILL.md所在目录>/scripts bookdb"
+$BOOKDB --help
 ```
 
-- 数据库默认是 `$TKB_DB`，未设置时为 `~/.local/share/textbook-kb/textbook.db`。每条命令都可以用 `--db` 覆盖。
+- 数据库默认是 `$BOOK_DB`，未设置时为 `~/.local/share/book-db/book.db`。每条命令都可以用 `--db` 覆盖。
 - 查询命令都支持加 `--json` 输出结构化结果。
 - 首次运行时 uv 会自动建好环境，无需手动安装。
 
@@ -49,12 +49,12 @@ $TKB --help
 ### 1. prepare
 
 ```bash
-$TKB prepare <a.md|MinerU输出目录> [更多...] --work tkb-work
+$BOOKDB prepare <a.md|MinerU输出目录> [更多...] --work bookdb-work
 ```
 
 - MinerU 的输出目录一般是 `<name>/auto/<name>.md`，旁边有 `images/` 和 `<name>_content_list.json`。
   传目录时会递归收集其中所有 `.md`。程序会自动找到 `content_list.json` 并映射 PDF 页码，没有也能正常工作。
-- 每本书会生成 `tkb-work/<id>/`，里面有：
+- 每本书会生成 `bookdb-work/<id>/`，里面有：
   - `plan.json`：草案，也是你要编辑的唯一文件
   - `outline.md`：章节树、各节字数和置信度标记
   - `issues.md` / `issues.json`：校验发现的问题
@@ -64,7 +64,7 @@ $TKB prepare <a.md|MinerU输出目录> [更多...] --work tkb-work
 
 先读 `issues.md`，再按 `references/review-guide.md` 逐类处理。要点：
 
-- 用 `$TKB show <work> -l 120-140` 查看带行号的原文；用 `$TKB sample <work> -n 10`（或加 `--kind math`、`--kind table`）
+- 用 `$BOOKDB show <work> -l 120-140` 查看带行号的原文；用 `$BOOKDB sample <work> -n 10`（或加 `--kind math`、`--kind table`）
   随机抽检。至少抽检 10 段正文和 10 个公式。
 - **error / warn 逐条过一遍**，info 抽查。只有在确定原意时才写 fix：
   `{"line": 91, "find": "varepsilon_0 r$", "replace": "varepsilon_0 r}$", "reason": "补全 \\frac 的花括号"}`
@@ -99,9 +99,9 @@ $TKB prepare <a.md|MinerU输出目录> [更多...] --work tkb-work
 ### 5. check / preview
 
 ```bash
-$TKB check <work>                  # 试构建：报告 error / warning / 统计，并做无损校验（不写库）
-$TKB preview <work> -s 2.3         # 查看某一节的切分结果（类型、标签、行号范围、开头文字）
-$TKB outline <work>                # 按当前 plan 重新生成 outline.md
+$BOOKDB check <work>                  # 试构建：报告 error / warning / 统计，并做无损校验（不写库）
+$BOOKDB preview <work> -s 2.3         # 查看某一节的切分结果（类型、标签、行号范围、开头文字）
+$BOOKDB outline <work>                # 按当前 plan 重新生成 outline.md
 ```
 
 把 error 全部消除，warning 逐条判断。抽查 2–3 个典型章节的 preview，确认定理、证明、例题、习题的边界合理。
@@ -110,8 +110,8 @@ $TKB outline <work>                # 按当前 plan 重新生成 outline.md
 ### 6. ingest / verify
 
 ```bash
-$TKB ingest <work> [--replace]     # status 不是 reviewed 时会拒绝导入（可用 --allow-draft 强制）
-$TKB verify                        # 从库中重建每本书，与源文件哈希比对
+$BOOKDB ingest <work> [--replace]     # status 不是 reviewed 时会拒绝导入（可用 --allow-draft 强制）
+$BOOKDB verify                        # 从库中重建每本书，与源文件哈希比对
 ```
 
 向用户汇报：书名和 id、章节数和块数、各类单元的数量、识别质量总结、做了哪些 fix、还有哪些遗留问题。
@@ -122,13 +122,13 @@ $TKB verify                        # 从库中重建每本书，与源文件哈�
 
 | 需求 | CLI | MCP 工具 |
 |---|---|---|
-| 有哪些书 | `$TKB books` | `list_books` |
-| 目录结构 | `$TKB toc <book> [-d 2] [-s 3]` | `get_toc` |
-| 按编号精确定位 | `$TKB lookup 定理2.3 [-b book] [--chapter 2]` | `lookup` |
-| 概念或关键词 | `$TKB search 格林函数 [-b book] [-t definition] [-s 3]` | `search` |
-| 读取某块及上下文 | `$TKB get c123 -C 1 [--raw]` | `get_chunk` |
-| 读取整节 | `$TKB read <book> 2.3 [--from c456]` | `read_section` |
-| 列出某章的定理和例题 | `$TKB units <book> -t theorem -s 2` | `list_units` |
+| 有哪些书 | `$BOOKDB books` | `list_books` |
+| 目录结构 | `$BOOKDB toc <book> [-d 2] [-s 3]` | `get_toc` |
+| 按编号精确定位 | `$BOOKDB lookup 定理2.3 [-b book] [--chapter 2]` | `lookup` |
+| 概念或关键词 | `$BOOKDB search 格林函数 [-b book] [-t definition] [-s 3]` | `search` |
+| 读取某块及上下文 | `$BOOKDB get c123 -C 1 [--raw]` | `get_chunk` |
+| 读取整节 | `$BOOKDB read <book> 2.3 [--from c456]` | `read_section` |
+| 列出某章的定理和例题 | `$BOOKDB units <book> -t theorem -s 2` | `list_units` |
 
 检索策略：
 
@@ -148,8 +148,8 @@ $TKB verify                        # 从库中重建每本书，与源文件哈�
 ## C. 注册为 MCP 服务器（可选）
 
 ```bash
-claude mcp add textbook-kb -- uv run --project <本skill目录>/scripts --extra mcp tkb mcp
-# 指定数据库：claude mcp add textbook-kb -e TKB_DB=/path/to/textbook.db -- uv run ...
+claude mcp add book-db -- uv run --project <本skill目录>/scripts --extra mcp bookdb mcp
+# 指定数据库：claude mcp add book-db -e BOOK_DB=/path/to/book.db -- uv run ...
 ```
 
 服务器只读，提供上表中的 7 个工具，兼容 mcp 1.x（FastMCP）和 2.x（MCPServer）。

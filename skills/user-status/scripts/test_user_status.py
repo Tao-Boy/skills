@@ -1,15 +1,15 @@
-"""Run: uv run --with pytest pytest skills/qa-profile/scripts -q"""
+"""Run: uv run --with pytest pytest skills/user-status/scripts -q"""
 
 import json
 
 import pytest
 
-import qa
+import user_status as qa
 
 
 @pytest.fixture()
 def run(tmp_path, monkeypatch, capsys):
-    monkeypatch.setenv("QA_PROFILE_HOME", str(tmp_path))
+    monkeypatch.setenv("USER_STATUS_HOME", str(tmp_path))
 
     def _run(*argv, data=None):
         args = list(argv) + (["--data", json.dumps(data, ensure_ascii=False)] if data is not None else [])

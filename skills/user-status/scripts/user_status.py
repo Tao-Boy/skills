@@ -3,16 +3,16 @@
 # requires-python = ">=3.10"
 # dependencies = []
 # ///
-"""qa-profile: 记录 Agent 提问与用户回答、评估答案质量、维护用户画像（单个 JSON 状态文件）。
+"""user-status: 记录 Agent 提问与用户回答、评估答案质量、维护用户画像（单个 JSON 状态文件）。
 
-    uv run qa.py init --name 张三
-    uv run qa.py ask <<'EOF'  {"text": "...", "topics": ["物理/电磁学/高斯定理"], "expected_points": ["..."]}  EOF
-    uv run qa.py answer q0001 <<'EOF'  {"text": "用户原话"}  EOF
-    uv run qa.py evaluate q0001 <<'EOF'  {"verdict": "partially_correct", "scores": {...}, "evidence": ["..."]}  EOF
-    uv run qa.py profile
+    uv run user_status.py init --name 张三
+    uv run user_status.py ask <<'EOF'  {"text": "...", "topics": ["物理/电磁学/高斯定理"], "expected_points": ["..."]}  EOF
+    uv run user_status.py answer q0001 <<'EOF'  {"text": "用户原话"}  EOF
+    uv run user_status.py evaluate q0001 <<'EOF'  {"verdict": "partially_correct", "scores": {...}, "evidence": ["..."]}  EOF
+    uv run user_status.py profile
 
 结构化输入一律通过 stdin（或 --data / --file）传 JSON，避免 shell 转义问题。
-状态文件：$QA_PROFILE_HOME/<profile>.json（默认 ~/.local/share/qa-profile/default.json）。
+状态文件：$USER_STATUS_HOME/<profile>.json（默认 ~/.local/share/user-status/default.json）。
 """
 
 from __future__ import annotations
@@ -71,15 +71,15 @@ def now() -> str:
 
 
 def store_dir(args) -> Path:
-    d = getattr(args, "store", None) or os.environ.get("QA_PROFILE_HOME")
+    d = getattr(args, "store", None) or os.environ.get("USER_STATUS_HOME")
     if d:
         return Path(d).expanduser()
     base = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share")
-    return base / "qa-profile"
+    return base / "user-status"
 
 
 def profile_path(args) -> Path:
-    pid = getattr(args, "profile", None) or os.environ.get("QA_PROFILE") or "default"
+    pid = getattr(args, "profile", None) or os.environ.get("USER_STATUS_PROFILE") or "default"
     if not re.fullmatch(r"[\w\-.]+", pid):
         raise QAError(f"profile 名只能包含字母、数字、下划线、点和连字符: {pid!r}")
     return store_dir(args) / f"{pid}.json"
@@ -865,14 +865,14 @@ def cmd_rubric(args):
 
 def build_parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--profile", "-p", help="画像名（默认 $QA_PROFILE 或 default）")
-    common.add_argument("--store", help="存储目录（默认 $QA_PROFILE_HOME 或 ~/.local/share/qa-profile）")
+    common.add_argument("--profile", "-p", help="画像名（默认 $USER_STATUS_PROFILE 或 default）")
+    common.add_argument("--store", help="存储目录（默认 $USER_STATUS_HOME 或 ~/.local/share/user-status）")
     common.add_argument("--json", action="store_true", help="输出 JSON")
     payload = argparse.ArgumentParser(add_help=False)
     payload.add_argument("--data", "-d", help="JSON 字符串（默认从 stdin 读取）")
     payload.add_argument("--file", "-f", help="从文件读取 JSON")
 
-    p = argparse.ArgumentParser(prog="qa.py", description=__doc__,
+    p = argparse.ArgumentParser(prog="user_status.py", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
 

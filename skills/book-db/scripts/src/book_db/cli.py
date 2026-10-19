@@ -1,4 +1,4 @@
-"""`tkb` command line.
+"""`bookdb` command line.
 
 Import:  prepare → (agent reviews/edits plan.json) → check / preview → ingest → verify
 Query :  books · toc · search · get · read · lookup · units · stats · mcp
@@ -272,10 +272,10 @@ def cmd_mcp(args) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     common = argparse.ArgumentParser(add_help=False)
-    common.add_argument("--db", help=f"数据库路径（默认 $TKB_DB 或 {D.default_db_path()}）")
+    common.add_argument("--db", help=f"数据库路径（默认 $BOOK_DB 或 {D.default_db_path()}）")
     common.add_argument("--json", action="store_true", help="输出 JSON")
 
-    p = argparse.ArgumentParser(prog="tkb", description=__doc__,
+    p = argparse.ArgumentParser(prog="bookdb", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
 
@@ -286,7 +286,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = add("prepare", cmd_prepare, "解析 MinerU markdown，生成校验报告、大纲与草拟 plan.json")
     sp.add_argument("paths", nargs="+", help=".md 文件或包含 .md 的目录（可多个）")
-    sp.add_argument("--work", default="tkb-work", help="工作目录根（默认 ./tkb-work）")
+    sp.add_argument("--work", default="bookdb-work", help="工作目录根（默认 ./bookdb-work）")
     sp.add_argument("--content-list", help="MinerU *_content_list.json（单文件时可显式指定；默认自动查找）")
     sp.add_argument("--force", action="store_true", help="覆盖已有 plan.json")
 

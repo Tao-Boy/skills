@@ -1,7 +1,7 @@
 """MCP (stdio) server exposing the read-only query tools.
 
 Register with Claude Code, e.g.:
-  claude mcp add textbook-kb -- uv run --project <skill>/scripts --extra mcp tkb mcp
+  claude mcp add book-db -- uv run --project <skill>/scripts --extra mcp bookdb mcp
 """
 
 from __future__ import annotations
@@ -28,9 +28,9 @@ def run(db_path: Optional[str] = None) -> None:
         try:
             from mcp.server.fastmcp import FastMCP as Server
         except ImportError as e:  # pragma: no cover
-            raise SystemExit("缺少 mcp 依赖：请用 `uv run --extra mcp tkb mcp` 启动") from e
+            raise SystemExit("缺少 mcp 依赖：请用 `uv run --extra mcp bookdb mcp` 启动") from e
 
-    mcp = Server("textbook-kb", instructions=INSTRUCTIONS)
+    mcp = Server("book-db", instructions=INSTRUCTIONS)
 
     def conn():
         return D.connect(db_path, readonly=True)

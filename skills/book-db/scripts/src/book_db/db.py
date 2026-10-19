@@ -60,18 +60,18 @@ CREATE VIRTUAL TABLE IF NOT EXISTS chunks_tri USING fts5(
 
 
 def default_db_path() -> Path:
-    env = os.environ.get("TKB_DB")
+    env = os.environ.get("BOOK_DB")
     if env:
         return Path(env).expanduser()
     base = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local" / "share")
-    return base / "textbook-kb" / "textbook.db"
+    return base / "book-db" / "book.db"
 
 
 def connect(path: str | os.PathLike | None = None, readonly: bool = False) -> sqlite3.Connection:
     p = Path(path).expanduser() if path else default_db_path()
     if readonly:
         if not p.exists():
-            raise FileNotFoundError(f"数据库不存在: {p}（先用 `tkb ingest` 导入教材）")
+            raise FileNotFoundError(f"数据库不存在: {p}（先用 `bookdb ingest` 导入教材）")
         conn = sqlite3.connect(f"file:{p}?mode=ro", uri=True)
     else:
         p.parent.mkdir(parents=True, exist_ok=True)

@@ -3,15 +3,15 @@ from pathlib import Path
 
 import pytest
 
-from textbook_kb import build as B
-from textbook_kb import db as D
-from textbook_kb import heuristics as H
-from textbook_kb import plan as P
-from textbook_kb import search as S
-from textbook_kb import workspace as W
-from textbook_kb.cli import main
-from textbook_kb.mdparse import parse_blocks
-from textbook_kb.textutil import norm_number, query_terms, split_lines
+from book_db import build as B
+from book_db import db as D
+from book_db import heuristics as H
+from book_db import plan as P
+from book_db import search as S
+from book_db import workspace as W
+from book_db.cli import main
+from book_db.mdparse import parse_blocks
+from book_db.textutil import norm_number, query_terms, split_lines
 
 FIXTURE = Path(__file__).parent / "fixtures" / "sample" / "electrodynamics.md"
 

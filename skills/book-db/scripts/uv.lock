@@ -41,6 +41,28 @@ wheels = [
 ]
 
 [[package]]
+name = "book-db"
+version = "0.1.0"
+source = { editable = "." }
+
+[package.optional-dependencies]
+mcp = [
+    { name = "mcp" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.2" }]
+provides-extras = ["mcp"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8" }]
+
+[[package]]
 name = "cffi"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -989,28 +1011,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/ad/eb/4e197bf26b023abaf
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f3/93/181df62699d9b5aca1d87e5cfda131dac87e3cdaebf668662f7206ca3470/starlette-1.9.0-py3-none-any.whl", hash = "sha256:fd3f159936e882d06c1108f84688f7cda2cf85fc6a592a50edbd175e882c2ddc", size = 80335, upload-time = "2026-10-18T15:50:31.526Z" },
 ]
-
-[[package]]
-name = "textbook-kb"
-version = "0.1.0"
-source = { editable = "." }
-
-[package.optional-dependencies]
-mcp = [
-    { name = "mcp" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "mcp", marker = "extra == 'mcp'", specifier = ">=1.2" }]
-provides-extras = ["mcp"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8" }]
 
 [[package]]
 name = "tomli"

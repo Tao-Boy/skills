@@ -1,6 +1,6 @@
 # 状态文件结构（schema v1）
 
-一个 profile 对应一个 JSON 文件：`$QA_PROFILE_HOME/<profile>.json`。旁边有：
+一个 profile 对应一个 JSON 文件：`$USER_STATUS_HOME/<profile>.json`。旁边有：
 - `backups/<profile>.<时间戳>.json`：每次写入前的快照，保留最近 20 份；
 - `<profile>.lock`：防止并发写入的文件锁。
 
@@ -62,6 +62,6 @@
 - **写前校验**：每次写入前，脚本都会检查 id 唯一、引用存在、各项取值在合法范围内，以及各种枚举值是否合法。
   校验不通过时拒绝写入，原文件保持不变。
 - **原子写入**：先写临时文件，再 fsync，最后用 `os.replace` 替换原文件，写入中途中断也不会损坏文件。
-- **版本迁移**：修改结构时，要把 `SCHEMA_VERSION` 加一，并在 `qa.py` 的 `migrate()` 中补上 `if v < N` 分支。
+- **版本迁移**：修改结构时，要把 `SCHEMA_VERSION` 加一，并在 `user_status.py` 的 `migrate()` 中补上 `if v < N` 分支。
   旧文件在下次被读取、写入时会自动升级；如果文件版本比脚本新，脚本会拒绝读取。
 - **规模**：单个文件存放几千条记录没有问题。记录特别多时，可以按时间拆成多个 profile，例如 `-p 张三-2026上`。

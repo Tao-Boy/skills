@@ -6,6 +6,7 @@
 |---|---|
 | [book-db](skills/book-db/SKILL.md) | 把 MinerU 解析的数学/物理教材 Markdown 经模型校验、规划、分类后无损导入 SQLite，并提供检索工具（CLI + MCP） |
 | [user-status](skills/user-status/SKILL.md) | 逐字记录用户对 Agent 提问的回答，按评分标准评估答案质量，用 JSON 持续维护用户画像 |
+| [shadow-users](skills/shadow-users/SKILL.md) | 根据用户画像创建认知水平相近、观察角度不同的影子用户，模拟用户在多视角、多场景、多时间下的思考，并用真实反馈校准 |
 
 ## 使用
 
